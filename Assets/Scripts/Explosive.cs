@@ -36,7 +36,6 @@ public class Explosive : MonoBehaviour
             if (hit.attachedRigidbody != null)
             {
                 cubes.Add(hit.attachedRigidbody);
-
             }
         }
 
