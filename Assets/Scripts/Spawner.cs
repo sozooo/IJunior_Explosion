@@ -5,49 +5,17 @@ using UnityEngine;
 [RequireComponent(typeof(Explosive))]
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private Spawner _spawnerPrefab;
-    [SerializeField] private float _decreaseCoefficient = 2;
-    [SerializeField] private int _minSpawnCount = 2;
-    [SerializeField] private int _maxSpawnCount = 7;
+    [SerializeField] private Cube _prefab;
 
-    private Explosive _explosive;
-    private float _chancesForExplode = 1f;
-    private Renderer _renderer;
-
-    private void Awake()
+    public Rigidbody Spawn(float _chancesForExplode, Vector3 scale)
     {
-        _renderer = GetComponent<Renderer>();
-        _explosive = GetComponent<Explosive>();
-    }
+        Cube cube = Instantiate(_prefab, transform.position, Quaternion.identity);
 
-    private void OnMouseUpAsButton()
-    {
-        if (Random.value <= _chancesForExplode)
-        {
-            List<Rigidbody> _bodies = new List<Rigidbody>();
-            int count = Random.Range(_minSpawnCount, _maxSpawnCount);
+        cube.Initialize(_chancesForExplode, scale);
 
-            for (int i = 0; i < count; i++)
-            {
-                Spawner explosive = Instantiate(_spawnerPrefab, transform.position, Quaternion.identity);
+        if (cube.TryGetComponent(out Rigidbody rigidbody))
+            return rigidbody;
 
-                explosive.Initialize(_chancesForExplode / _decreaseCoefficient, transform.localScale / _decreaseCoefficient);
-
-                if(explosive.TryGetComponent(out Rigidbody rigidbody))
-                    _bodies.Add(rigidbody);
-            }
-
-            _explosive.Explode(_bodies);
-        }
-
-        Destroy(gameObject);
-    }
-
-    public void Initialize(float chance, Vector3 size)
-    {
-        _chancesForExplode = chance;
-        transform.localScale = size;
-
-        _renderer.material.color = Random.ColorHSV();
+        return null;
     }
 }
